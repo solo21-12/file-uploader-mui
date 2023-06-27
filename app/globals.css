@@ -6,3 +6,26 @@
 }
 /* font-family: 'Barlow', sans-serif;
 font-family: 'Caprasimo', cursive; */
+
+.loading-animation {
+  font-size: 36px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.loading-animation span {
+  opacity: 0;
+  animation: reveal 1s ease-out forwards;
+  animation-delay: calc(0.1s * var(--index));
+}
+
+@keyframes reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

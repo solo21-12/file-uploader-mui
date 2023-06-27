@@ -1,0 +1,46 @@
+body {
+  background-color: #fff;
+}
+
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 88px);
+}
+.auth-container-main {
+  width: 45%;
+  background-color: #fff;
+  height: 50vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 3px dashed #f2f2f2;
+  border-radius: 8px;
+}
+
+.k{
+  height: 60vh !important;
+}
+
+@media screen and (max-width: 992px) {
+  .auth-container-main {
+    width: 55%;
+  }
+}
+
+@media screen and (max-width: 772px) {
+  .auth-container-main {
+    width: 75%;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .auth-container-main {
+    width: 95%;
+  }
+  p {
+    font-size: 12px;
+  }
+}
