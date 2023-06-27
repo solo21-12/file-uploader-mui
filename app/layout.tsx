@@ -1,5 +1,7 @@
+import ResponsiveAppBar from '@/component/navbar'
 import './globals.css'
-import './home/home.css'
+import '../style/home.css'
+import "../style/appBar.css"
 import { Inter } from 'next/font/google'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -16,7 +18,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        
+        <ResponsiveAppBar/>
+        {children}
+        
+        </body>
     </html>
   )
 }

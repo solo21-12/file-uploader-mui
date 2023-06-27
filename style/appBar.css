@@ -1,0 +1,22 @@
+.appBar {
+  background-color: transparent;
+  color: black;
+  box-shadow: none;
+  height: 88px;
+  min-height: 64px;
+}
+
+.toolBar {
+  display: flex;
+  justify-content: space-between;
+  width: 70%;
+  margin: 10px auto;
+  border-bottom: 1px solid gray;
+}
+
+
+@media screen and (max-width: 892px) {
+  .toolBar {
+    width: 100%;
+  }
+}
