@@ -38,13 +38,30 @@ function ResponsiveAppBar() {
       setShow(true);
     }
     setIsVisible(true);
-  }, []);
+  }, [usePathname()]);
 
   return (
-    <AppBar position="sticky" className="appBar">
+    <AppBar
+      position="sticky"
+      sx={{
+        bgcolor: "transparent",
+        color: "#637381",
+        boxShadow: "none",
+        height: "88px",
+        minHeight: "64px",
+      }}
+    >
       <Container maxWidth="xl">
         <Fade in={isVisible} timeout={2000}>
-          <Toolbar disableGutters className="toolBar">
+          <Toolbar
+            disableGutters
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              margin: "10px auto",
+              borderBottom: "2px solid #f2f2f2",
+            }}
+          >
             <Typography
               variant="h6"
               noWrap

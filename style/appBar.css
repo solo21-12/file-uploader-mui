@@ -1,11 +1,3 @@
-.appBar {
-  background-color: transparent;
-  color: #637381;
-
-  box-shadow: none;
-  height: 88px;
-  min-height: 64px;
-}
 
 .toolBar {
   display: flex;
