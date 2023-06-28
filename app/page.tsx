@@ -22,7 +22,12 @@ const Home = () => {
           <Typography variant="h2" className="barlow hero-text">
             Upload Your File Today With <span>Solo Upload</span>
           </Typography>
-          <p className="barlow">
+          <p
+            className="barlow"
+            style={{
+              color: "#817245",
+            }}
+          >
             Solo Upload is built on top of MUI, a powerful library that provides
             flexible, customizable, and easy-to-use components.
           </p>

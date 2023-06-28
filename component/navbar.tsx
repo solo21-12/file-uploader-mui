@@ -14,7 +14,10 @@ import MenuItem from "@mui/material/MenuItem";
 import { useRouter, usePathname } from "next/navigation";
 import { Fade } from "@mui/material";
 
-const settings = ["Dashboard", "Logout"];
+const settings = [
+  { name: "Dashboard", path: "/dashboard" },
+  { name: "Logout", path: "/signout" },
+];
 
 function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
@@ -27,8 +30,9 @@ function ResponsiveAppBar() {
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
-  const handleCloseUserMenu = () => {
+  const handleCloseUserMenu = (path: string) => {
     setAnchorElUser(null);
+    router.push(path);
   };
 
   const hiddenRoutes = ["/auth", "/auth/signup", "/auth/forgot"];
@@ -41,111 +45,124 @@ function ResponsiveAppBar() {
   }, [usePathname()]);
 
   return (
-    <AppBar
-      position="sticky"
-      sx={{
-        bgcolor: "transparent",
-        color: "#637381",
-        boxShadow: "none",
-        height: "88px",
-        minHeight: "64px",
-      }}
-    >
-      <Container maxWidth="xl">
-        <Fade in={isVisible} timeout={2000}>
-          <Toolbar
-            disableGutters
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              margin: "10px auto",
-              borderBottom: "2px solid #f2f2f2",
-            }}
-          >
-            <Typography
-              variant="h6"
-              noWrap
-              component="a"
-              onClick={() => router.push("/")}
-              sx={{
-                mr: 2,
-                display: { xs: "none", md: "flex" },
-                fontFamily: "Barlow",
-                fontWeight: 700,
-                letterSpacing: ".1rem",
-                color: "inherit",
-                textDecoration: "none",
-                cursor: "pointer",
-              }}
-            >
-              Solo Uploads
-            </Typography>
+    <div>
+      {![
+        "/dashboard",
+        "/dashboard/upload",
+        "/dashboard/profile",
+        "/dashboard/data",
+      ].includes(usePathname()) && (
+        <AppBar
+          position="sticky"
+          sx={{
+            bgcolor: "transparent",
+            color: "#637381",
+            boxShadow: "none",
+            height: "88px",
+            minHeight: "64px",
+            zIndex: (theme) => theme.zIndex.drawer + 2,
+          }}
+        >
+          <Container maxWidth="xl">
+            <Fade in={isVisible} timeout={2000}>
+              <Toolbar
+                disableGutters
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  margin: "10px auto",
+                  borderBottom: "2px solid #f2f2f2",
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  noWrap
+                  component="a"
+                  onClick={() => router.push("/")}
+                  sx={{
+                    mr: 2,
+                    display: { xs: "none", md: "flex" },
+                    fontFamily: "Barlow",
+                    fontWeight: 700,
+                    letterSpacing: ".1rem",
+                    color: "#817245",
 
-            <Typography
-              variant="h5"
-              noWrap
-              component="a"
-              href=""
-              sx={{
-                mr: 2,
-                display: { xs: "flex", md: "none" },
-                flexGrow: 1,
-                fontFamily: "Barlow",
-                fontWeight: 700,
-                letterSpacing: ".1rem",
-                color: "inherit",
-                textDecoration: "none",
-                fontSize: "17px",
-              }}
-            >
-              SOLO UPLOADS
-            </Typography>
-
-            {show && (
-              <Box sx={{ flexGrow: 0 }}>
-                <Tooltip title="Open settings">
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar
-                      alt="Dawit Abraham"
-                      src="/man.avif"
-                      sx={{
-                        bgcolor: "teal",
-                      }}
-                    />
-                  </IconButton>
-                </Tooltip>
-                <Menu
-                  sx={{ mt: "45px" }}
-                  id="menu-appbar"
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
+                    textDecoration: "none",
+                    cursor: "pointer",
                   }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
                 >
-                  {settings.map((setting) => (
-                    <MenuItem
-                      key={setting}
-                      onClick={handleCloseUserMenu}
-                      className="menuItem"
+                  Solo Uploads
+                </Typography>
+
+                <Typography
+                  variant="h5"
+                  noWrap
+                  component="a"
+                  href=""
+                  sx={{
+                    mr: 2,
+                    display: { xs: "flex", md: "none" },
+                    flexGrow: 1,
+                    fontFamily: "Barlow",
+                    fontWeight: 700,
+                    letterSpacing: ".1rem",
+                    color: "inherit",
+                    textDecoration: "none",
+                    fontSize: "17px",
+                  }}
+                >
+                  SOLO UPLOADS
+                </Typography>
+
+                {show && (
+                  <Box sx={{ flexGrow: 0 }}>
+                    <Tooltip title="Open settings">
+                      <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                        <Avatar
+                          alt="Dawit Abraham"
+                          src="/man.avif"
+                          sx={{
+                            bgcolor: "teal",
+                          }}
+                        />
+                      </IconButton>
+                    </Tooltip>
+                    <Menu
+                      sx={{ mt: "45px" }}
+                      id="menu-appbar"
+                      anchorEl={anchorElUser}
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      keepMounted
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      open={Boolean(anchorElUser)}
+                      onClose={handleCloseUserMenu}
                     >
-                      <Typography textAlign="center">{setting}</Typography>
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </Box>
-            )}
-          </Toolbar>
-        </Fade>
-      </Container>
-    </AppBar>
+                      {settings.map((setting) => (
+                        <MenuItem
+                          key={setting.name}
+                          onClick={() => handleCloseUserMenu(setting.path)}
+                          className="menuItem"
+                        >
+                          <Typography textAlign="center">
+                            {setting.name}
+                          </Typography>
+                        </MenuItem>
+                      ))}
+                    </Menu>
+                  </Box>
+                )}
+              </Toolbar>
+            </Fade>
+          </Container>
+        </AppBar>
+      )}
+    </div>
   );
 }
 export default ResponsiveAppBar;
