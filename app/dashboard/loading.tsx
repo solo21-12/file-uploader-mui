@@ -23,9 +23,9 @@ const Profile = () => {
           className="loading-text"
           sx={{
             color: "#817245",
-            fontSize:"50px",
-            fontFamily:"Caprasimo",
-            opacity:"0.7"
+            fontSize: "50px",
+            fontFamily: "Caprasimo",
+            opacity: "0.7",
           }}
         >
           Solo Tech Solutions

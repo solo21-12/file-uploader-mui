@@ -1,23 +1,77 @@
 "use client";
-import { Box, Container, TextField, Typography, Button } from "@mui/material";
+import {
+  Box,
+  Container,
+  TextField,
+  Typography,
+  Button,
+  Stepper,
+  Step,
+  StepLabel,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import GoogleIcon from "@mui/icons-material/Google";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import LoginIcon from "@mui/icons-material/Login";
 import { Fade } from "@mui/material";
+import FormHelperText from "@mui/material/FormHelperText";
 
 const SignUp = () => {
   const [email, setEmail] = useState<string>("");
+  const [name, setName] = useState<string>("");
+
   const [password, setPassword] = useState<string>("");
   const [Cpassword, setCpassword] = useState<string>("");
+  const [Mpassword, setMpassword] = useState<string>("");
+  const [Lpassword, setLpassword] = useState<string>("");
+  const [emailV, setemailV] = useState<string>("");
+  const [activeStep, setActiveStep] = useState<number>(0);
+
   const router = useRouter();
   const [show, setShow] = useState<boolean>(false);
   useEffect(() => {
     setShow(true);
   }, []);
-  const handleSubmit = (e: Event) => {
+
+  const steps = ["Step 1", "Step 2", "Step 3"]; // Add your desired step labels here
+
+  const handleSubmit = async (e: Event) => {
     e.preventDefault();
+    await fetch("/api/server/signup", {
+      method: "POST",
+      body: JSON.stringify({
+        username: email,
+        password,
+        name,
+      }),
+    });
+
+    router.push("/auth");
+  };
+
+  const steeper = () => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email.length > 0 && activeStep == 0) {
+      if (!regex.test(email)) {
+        setemailV("Please use a valid email address");
+      } else {
+        const a = activeStep + 1;
+        setActiveStep(a);
+      }
+    }
+
+    if (password.length > 0 && Cpassword.length > 0 && activeStep == 1) {
+      if (password !== Cpassword) {
+        setMpassword("Password didn't match");
+      } else if (password.length < 8) {
+        setMpassword("");
+        setLpassword("Password must be at least 8 characters long");
+      } else {
+        const a = activeStep + 1;
+        setActiveStep(a);
+      }
+    }
   };
 
   return (
@@ -30,12 +84,13 @@ const SignUp = () => {
               justifyContent: "space-between",
               marginTop: "25px",
               alignItems: "center",
+              marginBottom: "25px",
             }}
           >
             <Typography
               variant="h6"
               sx={{
-                color: " #637381",
+                color: "#637381",
               }}
             >
               Sign up
@@ -53,6 +108,15 @@ const SignUp = () => {
               Already have an account?
             </Button>
           </Box>
+
+          <Stepper activeStep={activeStep} alternativeLabel>
+            {steps.map((label, index) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+
           <Box
             sx={{
               display: "flex",
@@ -63,33 +127,83 @@ const SignUp = () => {
               height: "18vh",
             }}
           >
-            <TextField
-              label="Email Address"
-              sx={{
-                width: "90%",
-              }}
-              variant="standard"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <TextField
-              label="Password"
-              sx={{
-                width: "90%",
-              }}
-              variant="standard"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <TextField
-              label="Confirm password"
-              sx={{
-                width: "90%",
-              }}
-              variant="standard"
-              value={Cpassword}
-              onChange={(e) => setCpassword(e.target.value)}
-            />
+            {activeStep === 0 && (
+              <>
+                <TextField
+                  label="Email Address"
+                  sx={{
+                    width: "90%",
+                  }}
+                  variant="standard"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <FormHelperText
+                  sx={{
+                    color: "red",
+                  }}
+                >
+                  {emailV}
+                </FormHelperText>
+              </>
+            )}
+            {activeStep === 1 && (
+              <>
+                <TextField
+                  label="Password"
+                  sx={{
+                    width: "90%",
+                  }}
+                  variant="standard"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <FormHelperText
+                  sx={{
+                    color: "red",
+                  }}
+                >
+                  {Lpassword}
+                </FormHelperText>
+                <TextField
+                  label="Confirm password"
+                  sx={{
+                    width: "90%",
+                  }}
+                  variant="standard"
+                  value={Cpassword}
+                  onChange={(e) => setCpassword(e.target.value)}
+                />
+                <FormHelperText
+                  sx={{
+                    color: "red",
+                  }}
+                >
+                  {Mpassword}
+                </FormHelperText>
+              </>
+            )}
+            {activeStep === 2 && (
+              <>
+                <TextField
+                  label="Full Name"
+                  sx={{
+                    width: "90%",
+                  }}
+                  variant="standard"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+                <FormHelperText
+                  sx={{
+                    color: "red",
+                  }}
+                >
+                  {Mpassword}
+                </FormHelperText>
+              </>
+            )}
           </Box>
 
           <Box
@@ -114,12 +228,17 @@ const SignUp = () => {
                 },
               }}
               endIcon={<LoginIcon />}
+              onClick={
+                activeStep !== steps.length - 1
+                  ? () => steeper()
+                  : (e: any) => handleSubmit(e)
+              }
             >
-              Sign up
+              {activeStep === steps.length - 1 ? "Sign up" : "Next"}
             </Button>
           </Box>
 
-          <Box
+          {/* <Box
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -131,13 +250,13 @@ const SignUp = () => {
               variant="h6"
               sx={{
                 fontSize: "12px",
-                color: " #637381",
+                color: "#637381",
               }}
             >
               or
             </Typography>
             <Button endIcon={<GoogleIcon />} variant="contained">
-              Sign Up with{" "}
+              Sign Up with
             </Button>
             <Button
               endIcon={<GitHubIcon />}
@@ -152,9 +271,9 @@ const SignUp = () => {
                 },
               }}
             >
-              Sign Up with{" "}
+              Sign Up with
             </Button>
-          </Box>
+          </Box> */}
         </Container>
       </Fade>
     </Container>

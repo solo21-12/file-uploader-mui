@@ -4,10 +4,10 @@ import { Box, Button, Container, Typography } from "@mui/material";
 import { Fade } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
 const Dashboard = () => {
   const [show, setShow] = useState<boolean>(false);
   const router = useRouter();
+
   useEffect(() => {
     setShow(true);
   }, []);

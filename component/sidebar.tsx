@@ -146,6 +146,7 @@ export default function Sidebar(props: Props) {
             color: "#817245",
             boxShadow: "none",
             border: "1px solid #f2f2f2",
+            display:{md:"none"}
           }}
         >
           <Toolbar>

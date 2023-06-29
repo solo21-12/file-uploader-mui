@@ -14,6 +14,8 @@ import MenuItem from "@mui/material/MenuItem";
 import { useRouter, usePathname } from "next/navigation";
 import { Fade } from "@mui/material";
 
+import { signIn, signOut, useSession } from "next-auth/react";
+
 const settings = [
   { name: "Dashboard", path: "/dashboard" },
   { name: "Logout", path: "/signout" },
@@ -37,6 +39,9 @@ function ResponsiveAppBar() {
 
   const hiddenRoutes = ["/auth", "/auth/signup", "/auth/forgot"];
   const hiddenNavigationBar = hiddenRoutes.includes(usePathname());
+
+  const { data: session } = useSession();
+
   React.useEffect(() => {
     if (!hiddenNavigationBar) {
       setShow(true);
@@ -119,8 +124,8 @@ function ResponsiveAppBar() {
                     <Tooltip title="Open settings">
                       <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                         <Avatar
-                          alt="Dawit Abraham"
-                          src="/man.avif"
+                          alt={session?.user?.name || "solo"}
+                          src={session ? session?.user?.image : "Solo"}
                           sx={{
                             bgcolor: "teal",
                           }}
@@ -143,17 +148,39 @@ function ResponsiveAppBar() {
                       open={Boolean(anchorElUser)}
                       onClose={handleCloseUserMenu}
                     >
-                      {settings.map((setting) => (
-                        <MenuItem
-                          key={setting.name}
-                          onClick={() => handleCloseUserMenu(setting.path)}
-                          className="menuItem"
-                        >
-                          <Typography textAlign="center">
-                            {setting.name}
-                          </Typography>
-                        </MenuItem>
-                      ))}
+                      {settings.map((setting) => {
+                        if (setting.name == "Logout") {
+                          return session ? (
+                            <MenuItem
+                              key={"signout"}
+                              onClick={() => signOut()}
+                              className="menuItem"
+                            >
+                              <Typography textAlign="center">Logout</Typography>
+                            </MenuItem>
+                          ) : (
+                            <MenuItem
+                              key={"signin"}
+                              onClick={() => signIn()}
+                              className="menuItem"
+                            >
+                              <Typography textAlign="center">Log in</Typography>
+                            </MenuItem>
+                          );
+                        } else {
+                          return (
+                            <MenuItem
+                              key={setting.name}
+                              onClick={() => handleCloseUserMenu(setting.path)}
+                              className="menuItem"
+                            >
+                              <Typography textAlign="center">
+                                {setting.name}
+                              </Typography>
+                            </MenuItem>
+                          );
+                        }
+                      })}
                     </Menu>
                   </Box>
                 )}

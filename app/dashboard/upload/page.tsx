@@ -13,6 +13,7 @@ import {
   TableBody,
   Paper,
   LinearProgress,
+  Box,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -68,17 +69,53 @@ const FileUploader = () => {
     <Grid container direction="column" alignItems="center" spacing={2}>
       <Grid item>
         <Button
-          variant="contained"
+          sx={{
+            height: "200px",
+            width: "400px",
+            bgcolor: "#f2f2f2",
+            borderRadius: "10px",
+            marginTop: "10%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            marginBottom:"50px"
+          }}
           component="label"
-          startIcon={<CloudUploadIcon />}
         >
-          Select Files
-          <input
-            type="file"
-            multiple
-            style={{ display: "none" }}
-            onChange={handleFileSelect}
-          />
+          <Typography
+            variant="h5"
+            sx={{
+              color: "#817245",
+              textAlign: "center",
+              fontFamily: "Barlow",
+              paddingTop: "5%",
+            }}
+          >
+            Solo Uploads
+          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <CloudUploadIcon
+              sx={{
+                color: "#817245",
+                fontSize: "60px",
+              }}
+            />
+            <input
+              type="file"
+              multiple
+              style={{ display: "none" }}
+              onChange={handleFileSelect}
+            />
+          </Box>
         </Button>
       </Grid>
       {selectedFiles.length > 0 && (
@@ -152,14 +189,24 @@ const FileUploader = () => {
       )}
       {selectedFiles.length > 0 && (
         <Grid item>
-          <Button variant="contained" color="primary" onClick={handleUpload}>
+          <Button variant="contained" onClick={handleUpload}
+          sx={{
+            bgcolor:"#817245"
+          }}
+          >
             Upload
           </Button>
         </Grid>
       )}
       {uploadProgress !== null && (
         <Grid item sx={{ width: "85%", position: "absolute", bottom: "0" }}>
-          <LinearProgress variant="determinate" value={uploadProgress} />
+          <LinearProgress
+            variant="determinate"
+            value={uploadProgress}
+            sx={{
+              bgcolor: "#817245",
+            }}
+          />
         </Grid>
       )}
     </Grid>

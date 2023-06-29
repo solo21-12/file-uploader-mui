@@ -1,22 +1,38 @@
 "use client";
-import { Box, Container, TextField, Typography, Button } from "@mui/material";
+import {
+  Box,
+  Container,
+  TextField,
+  Typography,
+  Button,
+  FormHelperText,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Fade } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import LoginIcon from "@mui/icons-material/Login";
+import { signIn } from "next-auth/react";
 const Auth = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+
   const router = useRouter();
   const [show, setShow] = useState<boolean>(false);
   useEffect(() => {
     setShow(true);
   }, []);
 
-  const handleSubmit = (e: Event) => {
+  const handleSubmit = async (e: Event) => {
     e.preventDefault();
+    const res = await signIn("credentials", {
+      username: email,
+      password,
+      redirect: true,
+      callbackUrl: "/dashboard",
+    });
   };
 
   return (
@@ -52,6 +68,13 @@ const Auth = () => {
               Don't have an account?
             </Button>
           </Box>
+          <FormHelperText
+            sx={{
+              color: "red",
+            }}
+          >
+            {error}
+          </FormHelperText>
           <Box
             sx={{
               display: "flex",
@@ -102,11 +125,12 @@ const Auth = () => {
                 },
               }}
               endIcon={<LoginIcon />}
+              onClick={(e: any) => handleSubmit(e)}
             >
               Sign in
             </Button>
           </Box>
-          <Box
+          {/* <Box
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -141,7 +165,7 @@ const Auth = () => {
             >
               Sign in with{" "}
             </Button>
-          </Box>
+          </Box> */}
         </Container>
       </Container>
     </Fade>

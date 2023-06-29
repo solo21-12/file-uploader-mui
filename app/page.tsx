@@ -8,9 +8,11 @@ import { SiMui, SiTypescript } from "react-icons/si";
 import { SiNextdotjs } from "react-icons/si";
 import { Fade } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const Home = () => {
   const [show, setShow] = useState<boolean>(false);
+  const router = useRouter();
   useEffect(() => {
     setShow(true);
   }, []);
@@ -43,11 +45,12 @@ const Home = () => {
             endIcon={<CloudUploadIcon />}
             size="small"
             className="button"
+            onClick={() => router.push("/dashboard")}
           >
             Start uploading
           </Button>
           <Box>
-            <p>Made With</p>
+            <p style={{ color: "#817245", marginBottom: "15px" }}>Made With</p>
             <Stack
               direction="row"
               spacing={2}
