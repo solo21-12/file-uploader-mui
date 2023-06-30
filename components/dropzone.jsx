@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { ArrowUpTrayIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import { Container } from "@mui/material";
+import { getSignature, saveToDataBase } from "@/app/_action";
 
 const Dropzone = ({ className }) => {
   const [files, setFiles] = useState([]);
@@ -55,10 +56,15 @@ const Dropzone = ({ className }) => {
     e.preventDefault();
 
     if (!files?.length) return;
+    // geeting the signature from the server
+    const { signature, timestamp } = await getSignature();
 
     const formData = new FormData();
     files.forEach((file) => formData.append("file", file));
-    formData.append("upload_preset", "friendsbook");
+    formData.append("api_key", process.env.NEXT_PUNLIC_CLOUDNARY_API_KEY);
+    formData.append("signature", signature);
+    formData.append("timestamp", timestamp);
+    formData.append("folder", "next");
 
     const URL = process.env.NEXT_PUBLIC_CLOUDINARY_URL;
     const data = await fetch(URL, {
@@ -66,7 +72,11 @@ const Dropzone = ({ className }) => {
       body: formData,
     }).then((res) => res.json());
 
-    console.log(data);
+    await saveToDataBase({
+      version: data.version,
+      signature: data.signature,
+      public_id: data.public_id,
+    });
   };
 
   return (
@@ -84,7 +94,6 @@ const Dropzone = ({ className }) => {
           ) : (
             <p className="text-[#817245]">
               Drag & drop images here, or click to select files
-              
             </p>
           )}
         </div>
