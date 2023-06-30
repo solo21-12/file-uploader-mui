@@ -83,3 +83,21 @@ font-family: 'Caprasimo', cursive; */
   border: 5px dashed #f2f2f2;
   overflow: hidden;
 }
+
+.message-container-child-cirlce {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color:#817245;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+@media screen and (max-width: 772px) {
+  .message-container-child-cirlce {
+    width: 60px;
+    height: 60px;
+  }
+}

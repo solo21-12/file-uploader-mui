@@ -4,10 +4,14 @@ import { useDropzone } from "react-dropzone";
 import { ArrowUpTrayIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import { Container } from "@mui/material";
 import { getSignature, saveToDataBase } from "@/app/_action";
-
+import { Button, CircularProgress, Typography, Box } from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check";
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 const Dropzone = ({ className }) => {
   const [files, setFiles] = useState([]);
   const [rejected, setRejected] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isUploaded, setIsUploaded] = useState(false);
 
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
     if (acceptedFiles?.length) {
@@ -57,11 +61,12 @@ const Dropzone = ({ className }) => {
 
     if (!files?.length) return;
     // geeting the signature from the server
+    setIsUploading(true);
     const { signature, timestamp } = await getSignature();
 
     const formData = new FormData();
     files.forEach((file) => formData.append("file", file));
-    formData.append("api_key", process.env.NEXT_PUNLIC_CLOUDNARY_API_KEY);
+    formData.append("api_key", process.env.NEXT_PUBLIC_CLOUDNARY_API_KEY);
     formData.append("signature", signature);
     formData.append("timestamp", timestamp);
     formData.append("folder", "next");
@@ -72,6 +77,11 @@ const Dropzone = ({ className }) => {
       body: formData,
     }).then((res) => res.json());
 
+    if (data) {
+      setIsUploading(false);
+      setIsUploaded(true);
+      removeAll();
+    }
     await saveToDataBase({
       version: data.version,
       signature: data.signature,
@@ -81,30 +91,40 @@ const Dropzone = ({ className }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div
-        {...getRootProps({
-          className: className,
-        })}
-      >
-        <input {...getInputProps()} />
-        <div className="flex flex-col items-center justify-center gap-4 text-[#817245]  cursor-pointer">
-          <ArrowUpTrayIcon className="w-5 h-5 fill-current" />
-          {isDragActive ? (
-            <p className="text-[#817245]">Drop the files here ...</p>
-          ) : (
-            <p className="text-[#817245]">
-              Drag & drop images here, or click to select files
-            </p>
-          )}
+      {!isUploaded && !isUploading && (
+        <div
+          {...getRootProps({
+            className: className,
+          })}
+        >
+          <input {...getInputProps()} />
+          <div className="flex flex-col items-center justify-center gap-4 text-[#817245]  cursor-pointer">
+           
+            <CloudUploadIcon className="w-14 h-14 fill-current" sx={{
+              
+            }}/>
+            {isDragActive ? (
+              <Typography  sx={{
+                fontFamily: "Barlow",
+                color:"#817245"
+              }}>Drop the files here ...</Typography>
+            ) : (
+              <Typography  sx={{
+                fontFamily: "Barlow",
+                color:"#817245"
+              }}>
+                Drag & drop images here, or click to select files
+              </Typography>
+            )}
+          </div>
         </div>
-      </div>
-
-      <section className="mt-10">
+      )}
+      <Container className="mt-10">
         {/* Accepted files */}
         <Container>
-          {files.length > 0 && (
+          {!isUploading && files.length > 0 && (
             <Container>
-              <div className="flex gap-4">
+              <Container className="flex gap-4">
                 <h2 className="title text-3xl font-semibold font-Barlow text-[#817245]">
                   Preview
                 </h2>
@@ -117,11 +137,11 @@ const Dropzone = ({ className }) => {
                 </button>
                 <button
                   type="submit"
-                  className="ml-auto mt-1 text-[12px] uppercase tracking-wider font-bold text-neutral-500 border border-purple-400 rounded-md px-3 hover:text-[#817245] transition-colors"
+                  className="ml-auto mt-1 text-[12px] uppercase tracking-wider font-bold text-neutral-500 border border-[#817245]  rounded-md px-3 hover:text-[#817245] hover:scale-105 transition-colors"
                 >
                   Upload to Cloudinary
                 </button>
-              </div>
+              </Container>
               <h3 className="title text-lg font-semibold text-neutral-600 mt-10 border-b pb-3">
                 Accepted Files
               </h3>
@@ -192,7 +212,89 @@ const Dropzone = ({ className }) => {
             </Container>
           )}
         </Container>
-      </section>
+      </Container>
+      <Container>
+        {isUploading && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              alignContent: "center",
+              height: "80vh",
+            }}
+          >
+            <CircularProgress
+              sx={{
+                color: "#817245",
+                width: "80px !important",
+                height: "80px !important",
+              }}
+            />
+            <Typography
+              variant="h2"
+              sx={{
+                fontFamily: "Barlow",
+                color: "#817245",
+                fontSize: "60px",
+              }}
+              className="mt-5 text-lg"
+            >
+              Uploading...
+            </Typography>
+          </Box>
+        )}
+
+        {isUploaded && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              alignContent: "center",
+              height: "80vh",
+            }}
+          >
+            <div class="">
+              <div class="message-container-child-cirlce">
+                <CheckIcon
+                  sx={{
+                    color: "white",
+                    fontSize: "45px",
+                  }}
+                />
+              </div>
+              <Typography
+                variant="h2"
+                sx={{
+                  fontFamily: "Barlow",
+                  color: "#817245",
+                  fontSize: "60px",
+                }}
+                className="mt-5 text-lg"
+              >
+                Succesfully Uploaded
+              </Typography>
+              <Button
+                sx={{
+                  color: "#817245",
+                  ":hover": {
+                    bgcolor: "white",
+                    scale: "1.05",
+                  },
+                  marginTop: "25px",
+                }}
+                variant="contained"
+                onClick={() => setIsUploaded(!isUploaded)}
+              >
+                Continue Uploading
+              </Button>
+            </div>
+          </Box>
+        )}
+      </Container>
     </form>
   );
 };
