@@ -125,7 +125,7 @@ function ResponsiveAppBar() {
                       <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                         <Avatar
                           alt={session?.user?.name || "solo"}
-                          src={session ? session?.user?.image : "Solo"}
+                          src={session?.user?.image}
                           sx={{
                             bgcolor: "teal",
                           }}

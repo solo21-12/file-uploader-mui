@@ -1,6 +1,6 @@
 "use client";
 
-import Sidebar from "@/component/sidebar";
+import Sidebar from "@/components/sidebar";
 import { Box, Toolbar, Typography } from "@mui/material";
 import { Inter } from "next/font/google";
 
