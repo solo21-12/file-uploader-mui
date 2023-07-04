@@ -302,7 +302,7 @@ const Dropzone = ({ className }) => {
                 sx={{
                   color: "#817245",
                   ":hover": {
-                    bgcolor: "white !important",
+                    backgroundColor: "white !important",
                     scale: "1.05",
                   },
                   marginTop: "25px",
