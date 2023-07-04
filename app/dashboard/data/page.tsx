@@ -8,6 +8,7 @@ import Images from "@/components/Images";
 import Variants from "@/components/skeleton";
 import { useAuthContext } from "@/app/Context/store";
 import supabase from "@/config/supabse";
+import { useRouter } from "next/navigation";
 
 interface Data {
   name: string;
@@ -20,7 +21,7 @@ const DataComponent: React.FC = () => {
   const { currentUser } = useAuthContext();
   const [datas, setData] = useState<Data[]>([]);
   const [show, setShow] = useState<boolean>(false);
-
+  const router = useRouter();
   useEffect(() => {
     const fetchDataAsync = async () => {
       setShow(true);
@@ -47,6 +48,8 @@ const DataComponent: React.FC = () => {
 
     if (currentUser) {
       fetchDataAsync();
+    } else {
+      router.push("/auth");
     }
   }, [currentUser]);
 
@@ -58,7 +61,7 @@ const DataComponent: React.FC = () => {
   return (
     <Fade in={show} timeout={2000}>
       <div>
-        {currentUser && datas && datas.length > 0 ? (
+        {datas && datas.length > 0 ? (
           <Images files={datas} removeFile={deletFiles} />
         ) : (
           <Variants />
@@ -69,4 +72,3 @@ const DataComponent: React.FC = () => {
 };
 
 export default DataComponent;
-
