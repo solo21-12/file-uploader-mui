@@ -1,103 +1,69 @@
 "use client";
-import { Fade, IconButton } from "@mui/material";
+
+import { Fade } from "@mui/material";
 import { useEffect, useState } from "react";
-import * as React from "react";
-import Box from "@mui/material/Box";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { useDemoData } from "@mui/x-data-grid-generator";
-import DeleteIcon from "@mui/icons-material/Delete";
-const Data = () => {
-  const VISIBLE_FIELDS = ["name", "country", "dateCreated"];
 
-  const { data } = useDemoData({
-    dataSet: "Employee",
-    visibleFields: VISIBLE_FIELDS,
-    rowLength: 100,
-  });
+import { deleteFile, fetchData, retrieveFile } from "@/app/_action";
+import Images from "@/components/Images";
+import Variants from "@/components/skeleton";
+import { useAuthContext } from "@/app/Context/store";
+import supabase from "@/config/supabse";
 
-  const columns = React.useMemo(
-    () =>
-      data.columns
-        .filter((column) => VISIBLE_FIELDS.includes(column.field))
-        .map((column) => ({
-          ...column,
-          flex: 1,
-        })),
-    [data.columns]
-  );
+interface Data {
+  name: string;
+  preview: string;
+  public_id: string;
+  collectionId: string;
+}
 
+const DataComponent: React.FC = () => {
+  const { currentUser } = useAuthContext();
+  const [datas, setData] = useState<Data[]>([]);
   const [show, setShow] = useState<boolean>(false);
 
   useEffect(() => {
-    setShow(true);
-  }, []);
+    const fetchDataAsync = async () => {
+      setShow(true);
+      const { data, error }: { data: any; error: any } = await supabase
+        .from("files")
+        .select();
+      const a = data.filter((data: any) => data.user_id === currentUser.id);
 
-  const handleDelete = () => {
-    // Logic to handle the deletion of data goes here
-    console.log("Data deleted");
+      if (a && a.length > 0) {
+        for (const file of a) {
+          const retrieveFiles = await retrieveFile(file.public_id);
+          setData((prevData) => [
+            ...prevData,
+            {
+              name: file.filename,
+              preview: retrieveFiles,
+              public_id: file.public_id,
+              collectionId: file.collectionId,
+            },
+          ]);
+        }
+      }
+    };
+
+    fetchDataAsync();
+  }, [currentUser.id]);
+
+  const deletFiles = (public_id: string) => {
+    const a = datas.filter((item) => item.public_id !== public_id);
+    setData(a);
+    deleteFile(public_id);
   };
-
   return (
     <Fade in={show} timeout={2000}>
-      <Box
-        sx={{
-          height: "100%",
-          width: "100%",
-          borderRadius: "10px",
-          overflow: "hidden",
-        }}
-      >
-        <Box
-          sx={{
-            p: 1,
-            height: "calc(100% - 48px)",
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <DataGrid
-            {...data}
-            initialState={{
-              ...data.initialState,
-              filter: {
-                filterModel: {
-                  items: [],
-                  quickFilterValues: [],
-                },
-              },
-            }}
-            disableColumnFilter
-            disableDensitySelector
-            columns={[
-              ...columns,
-              {
-                field: "Action",
-                headerName: "Action",
-                width: 100,
-                renderCell: () => (
-                  <IconButton onClick={handleDelete}>
-                    <DeleteIcon color="error" />
-                  </IconButton>
-                ),
-              },
-            ]}
-            slots={{ toolbar: GridToolbar }}
-            slotProps={{
-              toolbar: {
-                showQuickFilter: true,
-                quickFilterProps: { debounceMs: 500 },
-              },
-            }}
-            sx={{
-              color: "#817245",
-              cursor:"pointer"
-            }}
-          />
-        </Box>
-      </Box>
+      <div>
+        {datas && datas.length > 0 ? (
+          <Images files={datas} removeFile={deletFiles} />
+        ) : (
+          <Variants />
+        )}
+      </div>
     </Fade>
   );
 };
 
-export default Data;
+export default DataComponent;

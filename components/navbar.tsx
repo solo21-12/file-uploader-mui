@@ -13,12 +13,12 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import { useRouter, usePathname } from "next/navigation";
 import { Fade } from "@mui/material";
-
-import { signIn, signOut, useSession } from "next-auth/react";
+import { useAuthContext } from "@/app/Context/store";
+import supabase from "@/config/supabse";
 
 const settings = [
-  { name: "Dashboard", path: "/dashboard" },
-  { name: "Logout", path: "/signout" },
+  { name: "Dashboard", path: "/dashboard/upload" },
+  { name: "Logout", path: "/" },
 ];
 
 function ResponsiveAppBar() {
@@ -28,19 +28,28 @@ function ResponsiveAppBar() {
   const [show, setShow] = React.useState<boolean>(false);
   const [isVisible, setIsVisible] = React.useState(false);
   const router = useRouter();
+  const { currentUser, setUser } = useAuthContext();
 
+  const logout = async () => {
+    setUser(null);
+    router.refresh()
+    await supabase.auth.signOut();
+  };
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
   const handleCloseUserMenu = (path: string) => {
     setAnchorElUser(null);
-    router.push(path);
+    if (path) {
+      if (path === "Logout") {
+        logout();
+        router.refresh();
+      }
+      router.push(path);
+    }
   };
-
   const hiddenRoutes = ["/auth", "/auth/signup", "/auth/forgot"];
   const hiddenNavigationBar = hiddenRoutes.includes(usePathname());
-
-  const { data: session } = useSession();
 
   React.useEffect(() => {
     if (!hiddenNavigationBar) {
@@ -103,7 +112,6 @@ function ResponsiveAppBar() {
                   variant="h5"
                   noWrap
                   component="a"
-                  href=""
                   sx={{
                     mr: 2,
                     display: { xs: "flex", md: "none" },
@@ -124,10 +132,10 @@ function ResponsiveAppBar() {
                     <Tooltip title="Open settings">
                       <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                         <Avatar
-                          alt={session?.user?.name || "solo"}
-                          src={session?.user?.image}
+                          alt={"solo"}
+                          src={"/"}
                           sx={{
-                            bgcolor: "teal",
+                            bgcolor: "#817245",
                           }}
                         />
                       </IconButton>
@@ -150,10 +158,10 @@ function ResponsiveAppBar() {
                     >
                       {settings.map((setting) => {
                         if (setting.name == "Logout") {
-                          return session ? (
+                          return currentUser ? (
                             <MenuItem
                               key={"signout"}
-                              onClick={() => signOut()}
+                              onClick={() => handleCloseUserMenu(setting.path)}
                               className="menuItem"
                             >
                               <Typography textAlign="center">Logout</Typography>
@@ -161,7 +169,10 @@ function ResponsiveAppBar() {
                           ) : (
                             <MenuItem
                               key={"signin"}
-                              onClick={() => signIn()}
+                              onClick={() => {
+                                setAnchorElUser(null);
+                                router.push("/auth");
+                              }}
                               className="menuItem"
                             >
                               <Typography textAlign="center">Log in</Typography>

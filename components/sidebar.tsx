@@ -18,10 +18,12 @@ import { useRouter } from "next/navigation";
 
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import StorageRoundedIcon from "@mui/icons-material/StorageRounded";
-import Person2Icon from "@mui/icons-material/Person2";
-import DashboardIcon from "@mui/icons-material/Dashboard";
+import LogoutIcon from "@mui/icons-material/Logout";
+import LoginIcon from "@mui/icons-material/Login";
 import { Fade } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useAuthContext } from "@/app/Context/store";
+import supabase from "@/config/supabse";
 const drawerWidth = 240;
 
 interface Props {
@@ -32,25 +34,16 @@ export default function Sidebar(props: Props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [show, setShow] = useState<boolean>(false);
-
+  const { currentUser,setUser } = useAuthContext();
   const router = useRouter();
-
+  const logout = async () => {
+    await supabase.auth.signOut();
+  };
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
   const menuItems = [
-    {
-      name: "Dashboard",
-      icon: (
-        <DashboardIcon
-          sx={{
-            color: "#817245",
-          }}
-        />
-      ),
-      path: "/dashboard",
-    },
     {
       name: "Upload",
       icon: (
@@ -72,17 +65,6 @@ export default function Sidebar(props: Props) {
         />
       ),
       path: "/dashboard/data",
-    },
-    {
-      name: "Profile",
-      icon: (
-        <Person2Icon
-          sx={{
-            color: "#817245",
-          }}
-        />
-      ),
-      path: "/dashboard/profile",
     },
   ];
 
@@ -123,6 +105,41 @@ export default function Sidebar(props: Props) {
             </ListItemButton>
           </ListItem>
         ))}
+        {currentUser ? (
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => {
+                logout();
+                setUser(null)
+                router.push("/");
+              }}
+            >
+              <ListItemIcon>
+                <LogoutIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={"Logout"}
+                sx={{
+                  color: "#817245",
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
+        ) : (
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => router.push("/auth")}>
+              <ListItemIcon>
+                <LoginIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={"Login"}
+                sx={{
+                  color: "#817245",
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
+        )}
       </List>
     </div>
   );
@@ -146,7 +163,7 @@ export default function Sidebar(props: Props) {
             color: "#817245",
             boxShadow: "none",
             border: "1px solid #f2f2f2",
-            display:{md:"none"}
+            display: { md: "none" },
           }}
         >
           <Toolbar>

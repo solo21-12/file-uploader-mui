@@ -5,7 +5,7 @@ import "../style/appBar.css";
 import "../style/auth.css";
 import "../style/dashboard.css";
 import { Inter } from "next/font/google";
-import Provider from "@/components/sessionProvider";
+import { AuthProvider, useAuthContext } from "./Context/store";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,10 +24,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Provider session={session}>
+        <AuthProvider>
           <ResponsiveAppBar />
           {children}
-        </Provider>
+        </AuthProvider>
       </body>
     </html>
   );

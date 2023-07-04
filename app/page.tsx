@@ -9,13 +9,17 @@ import { SiNextdotjs } from "react-icons/si";
 import { Fade } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import { useAuthContext } from "./Context/store";
+import { RiSupabaseFill } from "react-icons/ri";
 const Home = () => {
   const [show, setShow] = useState<boolean>(false);
+  const user = useAuthContext();
+
   const router = useRouter();
   useEffect(() => {
     setShow(true);
   }, []);
+  console.log("user", user);
 
   return (
     <Fade in={show} timeout={2000}>
@@ -28,14 +32,19 @@ const Home = () => {
             className="barlow"
             style={{
               color: "#817245",
+              marginBottom:"15px"
             }}
           >
-            Solo Upload is built on top of MUI, a powerful library that provides
-            flexible, customizable, and easy-to-use components.
+            Welcome to our cutting-edge website built with React at the frontend
+            and Node.js at the backend. Our platform empowers you to
+            effortlessly upload and manage your images on the cloud using
+            Cloudinary. With seamless integration with Supabase as our robust
+            database, we offer a powerful solution for storing and retrieving
+            your data securely. 
           </p>
           <Button
             sx={{
-              bgcolor: "black",
+              bgcolor: "black !important",
               color: "#fff",
               padding: "10px",
               ":hover": {
@@ -45,7 +54,7 @@ const Home = () => {
             endIcon={<CloudUploadIcon />}
             size="small"
             className="button"
-            onClick={() => router.push("/dashboard")}
+            onClick={() => router.push("/dashboard/upload")}
           >
             Start uploading
           </Button>
@@ -58,11 +67,12 @@ const Home = () => {
                 fontSize: "1.5rem",
               }}
             >
-              <BiLogoReact />
-              <SiMui />
-              <FaNode />
+              <BiLogoReact className=" text-blue-800" />
+              <SiMui className=" text-blue-500" />
+              <FaNode className=" text-teal-600" />
               <SiNextdotjs />
-              <SiTypescript />
+              <SiTypescript className=" text-blue-500" />
+              <RiSupabaseFill className=" text-teal-600" />
             </Stack>
           </Box>
         </Container>

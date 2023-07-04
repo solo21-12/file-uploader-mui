@@ -6,13 +6,16 @@ import { Container } from "@mui/material";
 import { getSignature, saveToDataBase } from "@/app/_action";
 import { Button, CircularProgress, Typography, Box } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { useAuthContext } from "@/app/Context/store";
+import { useRouter } from "next/navigation";
 const Dropzone = ({ className }) => {
   const [files, setFiles] = useState([]);
   const [rejected, setRejected] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
-
+  const { currentUser } = useAuthContext();
+  const router = useRouter();
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
     if (acceptedFiles?.length) {
       setFiles((previousFiles) => [
@@ -60,33 +63,47 @@ const Dropzone = ({ className }) => {
     e.preventDefault();
 
     if (!files?.length) return;
-    // geeting the signature from the server
-    setIsUploading(true);
-    const { signature, timestamp } = await getSignature();
+    if (!currentUser) {
+      router.push("/auth");
+    } else {
+      setIsUploading(true);
+      const { signature, timestamp } = await getSignature();
 
-    const formData = new FormData();
-    files.forEach((file) => formData.append("file", file));
-    formData.append("api_key", process.env.NEXT_PUBLIC_CLOUDNARY_API_KEY);
-    formData.append("signature", signature);
-    formData.append("timestamp", timestamp);
-    formData.append("folder", "next");
+      const formData = new FormData();
+      files.forEach((file) => formData.append("file", file));
+      formData.append("api_key", process.env.NEXT_PUBLIC_CLOUDNARY_API_KEY);
+      formData.append("signature", signature);
+      formData.append("timestamp", timestamp);
+      formData.append("folder", "next");
 
-    const URL = process.env.NEXT_PUBLIC_CLOUDINARY_URL;
-    const data = await fetch(URL, {
-      method: "POST",
-      body: formData,
-    }).then((res) => res.json());
+      const URL = process.env.NEXT_PUBLIC_CLOUDINARY_URL;
+      const dataPromises = files.map((file) =>
+        fetch(URL, {
+          method: "POST",
+          body: formData,
+        }).then((res) => res.json())
+      );
 
-    if (data) {
-      setIsUploading(false);
-      setIsUploaded(true);
-      removeAll();
+      const uploadResponses = await Promise.all(dataPromises);
+
+      if (uploadResponses.length === files.length) {
+        setIsUploading(false);
+        setIsUploaded(true);
+        removeAll();
+
+        for (let i = 0; i < uploadResponses.length; i++) {
+          const uploadData = uploadResponses[i];
+          await saveToDataBase({
+            version: uploadData.version,
+            signature: uploadData.signature,
+            public_id: uploadData.public_id,
+            user: currentUser.id,
+            filename: uploadData.original_filename,
+          });
+        }
+      }
     }
-    await saveToDataBase({
-      version: data.version,
-      signature: data.signature,
-      public_id: data.public_id,
-    });
+    // Getting the signature from the server
   };
 
   return (
@@ -99,20 +116,23 @@ const Dropzone = ({ className }) => {
         >
           <input {...getInputProps()} />
           <div className="flex flex-col items-center justify-center gap-4 text-[#817245]  cursor-pointer">
-           
-            <CloudUploadIcon className="w-14 h-14 fill-current" sx={{
-              
-            }}/>
+            <CloudUploadIcon className="w-14 h-14 fill-current" sx={{}} />
             {isDragActive ? (
-              <Typography  sx={{
-                fontFamily: "Barlow",
-                color:"#817245"
-              }}>Drop the files here ...</Typography>
+              <Typography
+                sx={{
+                  fontFamily: "Barlow",
+                  color: "#817245",
+                }}
+              >
+                Drop the files here ...
+              </Typography>
             ) : (
-              <Typography  sx={{
-                fontFamily: "Barlow",
-                color:"#817245"
-              }}>
+              <Typography
+                sx={{
+                  fontFamily: "Barlow",
+                  color: "#817245",
+                }}
+              >
                 Drag & drop images here, or click to select files
               </Typography>
             )}
@@ -139,7 +159,7 @@ const Dropzone = ({ className }) => {
                   type="submit"
                   className="ml-auto mt-1 text-[12px] uppercase tracking-wider font-bold text-neutral-500 border border-[#817245]  rounded-md px-3 hover:text-[#817245] hover:scale-105 transition-colors"
                 >
-                  Upload to Cloudinary
+                  Upload to Solo Upload
                 </button>
               </Container>
               <h3 className="title text-lg font-semibold text-neutral-600 mt-10 border-b pb-3">
@@ -257,8 +277,8 @@ const Dropzone = ({ className }) => {
               height: "80vh",
             }}
           >
-            <div class="">
-              <div class="message-container-child-cirlce">
+            <div className="">
+              <div className="message-container-child-cirlce">
                 <CheckIcon
                   sx={{
                     color: "white",

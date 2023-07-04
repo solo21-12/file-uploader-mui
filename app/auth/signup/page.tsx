@@ -8,6 +8,7 @@ import {
   Stepper,
   Step,
   StepLabel,
+  CircularProgress,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -16,17 +17,18 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import LoginIcon from "@mui/icons-material/Login";
 import { Fade } from "@mui/material";
 import FormHelperText from "@mui/material/FormHelperText";
+import supabase from "@/config/supabse";
 
 const SignUp = () => {
   const [email, setEmail] = useState<string>("");
   const [name, setName] = useState<string>("");
-
   const [password, setPassword] = useState<string>("");
   const [Cpassword, setCpassword] = useState<string>("");
   const [Mpassword, setMpassword] = useState<string>("");
   const [Lpassword, setLpassword] = useState<string>("");
   const [emailV, setemailV] = useState<string>("");
   const [activeStep, setActiveStep] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const router = useRouter();
   const [show, setShow] = useState<boolean>(false);
@@ -36,18 +38,18 @@ const SignUp = () => {
 
   const steps = ["Step 1", "Step 2", "Step 3"]; // Add your desired step labels here
 
-  const handleSubmit = async (e: Event) => {
-    e.preventDefault();
-    await fetch("/api/server/signup", {
-      method: "POST",
-      body: JSON.stringify({
-        username: email,
-        password,
-        name,
-      }),
-    });
+  const handleSubmit = async () => {
+    setLoading(true);
 
-    router.push("/auth");
+    try {
+      let { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+      });
+    } catch (error) {
+      console.log("error occured");
+      router.push("/");
+    }
   };
 
   const steeper = () => {
@@ -77,168 +79,172 @@ const SignUp = () => {
   return (
     <Container maxWidth="lg" className="auth-container">
       <Fade in={show} timeout={2000}>
-        <Container maxWidth="lg" className="auth-container-main k">
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginTop: "25px",
-              alignItems: "center",
-              marginBottom: "25px",
-            }}
-          >
-            <Typography
-              variant="h6"
+        {!loading ? (
+          <Container maxWidth="lg" className="auth-container-main k">
+            <Box
               sx={{
-                color: "#637381",
-              }}
-            >
-              Sign up
-            </Typography>
-            <Button
-              sx={{
-                color: "#0589ff",
-                ":hover": {
-                  bgcolor: "transparent",
-                  textDecoration: "underline",
-                },
-              }}
-              onClick={() => router.push("/auth")}
-            >
-              Already have an account?
-            </Button>
-          </Box>
-
-          <Stepper activeStep={activeStep} alternativeLabel>
-            {steps.map((label, index) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignContent: "center",
-              alignItems: "center",
-              justifyContent: "space-between",
-              height: "18vh",
-            }}
-          >
-            {activeStep === 0 && (
-              <>
-                <TextField
-                  label="Email Address"
-                  sx={{
-                    width: "90%",
-                  }}
-                  variant="standard"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <FormHelperText
-                  sx={{
-                    color: "red",
-                  }}
-                >
-                  {emailV}
-                </FormHelperText>
-              </>
-            )}
-            {activeStep === 1 && (
-              <>
-                <TextField
-                  label="Password"
-                  sx={{
-                    width: "90%",
-                  }}
-                  variant="standard"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <FormHelperText
-                  sx={{
-                    color: "red",
-                  }}
-                >
-                  {Lpassword}
-                </FormHelperText>
-                <TextField
-                  label="Confirm password"
-                  sx={{
-                    width: "90%",
-                  }}
-                  variant="standard"
-                  value={Cpassword}
-                  onChange={(e) => setCpassword(e.target.value)}
-                />
-                <FormHelperText
-                  sx={{
-                    color: "red",
-                  }}
-                >
-                  {Mpassword}
-                </FormHelperText>
-              </>
-            )}
-            {activeStep === 2 && (
-              <>
-                <TextField
-                  label="Full Name"
-                  sx={{
-                    width: "90%",
-                  }}
-                  variant="standard"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-                <FormHelperText
-                  sx={{
-                    color: "red",
-                  }}
-                >
-                  {Mpassword}
-                </FormHelperText>
-              </>
-            )}
-          </Box>
-
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Button
-              variant="contained"
-              size="large"
-              sx={{
-                // width: "100%",
-                marginBottom: "45px",
+                display: "flex",
+                justifyContent: "space-between",
                 marginTop: "25px",
-                bgcolor: "black",
-                color: "white",
-                ":hover": {
-                  bgcolor: "rgb(46, 42, 42)",
-                },
+                alignItems: "center",
+                marginBottom: "25px",
               }}
-              endIcon={<LoginIcon />}
-              onClick={
-                activeStep !== steps.length - 1
-                  ? () => steeper()
-                  : (e: any) => handleSubmit(e)
-              }
             >
-              {activeStep === steps.length - 1 ? "Sign up" : "Next"}
-            </Button>
-          </Box>
+              <Typography
+                variant="h6"
+                sx={{
+                  color: "#637381",
+                }}
+              >
+                Sign up
+              </Typography>
+              <Button
+                sx={{
+                  color: "#0589ff",
+                  ":hover": {
+                    bgcolor: "transparent",
+                    textDecoration: "underline",
+                  },
+                }}
+                onClick={() => router.push("/auth")}
+              >
+                Already have an account?
+              </Button>
+            </Box>
 
-          {/* <Box
+            <Stepper activeStep={activeStep} alternativeLabel>
+              {steps.map((label, index) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignContent: "center",
+                alignItems: "center",
+                justifyContent: "space-between",
+                height: "18vh",
+              }}
+            >
+              {activeStep === 0 && (
+                <>
+                  <TextField
+                    label="Email Address"
+                    sx={{
+                      width: "90%",
+                    }}
+                    variant="standard"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <FormHelperText
+                    sx={{
+                      color: "red",
+                    }}
+                  >
+                    {emailV}
+                  </FormHelperText>
+                </>
+              )}
+              {activeStep === 1 && (
+                <>
+                  <TextField
+                    label="Password"
+                    type="password"
+                    sx={{
+                      width: "90%",
+                    }}
+                    variant="standard"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <FormHelperText
+                    sx={{
+                      color: "red",
+                    }}
+                  >
+                    {Lpassword}
+                  </FormHelperText>
+                  <TextField
+                    label="Confirm password"
+                    type="password"
+                    sx={{
+                      width: "90%",
+                    }}
+                    variant="standard"
+                    value={Cpassword}
+                    onChange={(e) => setCpassword(e.target.value)}
+                  />
+                  <FormHelperText
+                    sx={{
+                      color: "red",
+                    }}
+                  >
+                    {Mpassword}
+                  </FormHelperText>
+                </>
+              )}
+              {activeStep === 2 && (
+                <>
+                  <TextField
+                    label="Full Name"
+                    sx={{
+                      width: "90%",
+                    }}
+                    variant="standard"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                  <FormHelperText
+                    sx={{
+                      color: "red",
+                    }}
+                  >
+                    {Mpassword}
+                  </FormHelperText>
+                </>
+              )}
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                variant="contained"
+                size="large"
+                sx={{
+                  // width: "100%",
+                  marginBottom: "45px",
+                  marginTop: "25px",
+                  bgcolor: "black",
+                  color: "white",
+                  ":hover": {
+                    bgcolor: "rgb(46, 42, 42)",
+                  },
+                  backgroundColor: "black !important",
+                }}
+                endIcon={<LoginIcon />}
+                onClick={
+                  activeStep !== steps.length - 1
+                    ? () => steeper()
+                    : () => handleSubmit()
+                }
+              >
+                {activeStep === steps.length - 1 ? "Sign up" : "Next"}
+              </Button>
+            </Box>
+
+            {/* <Box
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -274,7 +280,38 @@ const SignUp = () => {
               Sign Up with
             </Button>
           </Box> */}
-        </Container>
+          </Container>
+        ) : (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              alignContent: "center",
+              height: "80vh",
+            }}
+          >
+            <CircularProgress
+              sx={{
+                color: "#817245",
+                width: "80px !important",
+                height: "80px !important",
+              }}
+            />
+            <Typography
+              variant="h2"
+              sx={{
+                fontFamily: "Barlow",
+                color: "#817245",
+                fontSize: "60px",
+              }}
+              className="mt-5 text-lg"
+            >
+              Signing Up...
+            </Typography>
+          </Box>
+        )}
       </Fade>
     </Container>
   );
