@@ -45,7 +45,9 @@ const DataComponent: React.FC = () => {
       }
     };
 
-    fetchDataAsync();
+    if (currentUser) {
+      fetchDataAsync();
+    }
   }, [currentUser.id]);
 
   const deletFiles = (public_id: string) => {
@@ -56,7 +58,7 @@ const DataComponent: React.FC = () => {
   return (
     <Fade in={show} timeout={2000}>
       <div>
-        {datas && datas.length > 0 ? (
+        {currentUser && datas && datas.length > 0 ? (
           <Images files={datas} removeFile={deletFiles} />
         ) : (
           <Variants />
