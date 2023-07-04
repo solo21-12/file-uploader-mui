@@ -40,7 +40,7 @@ const Images = ({ files, removeFile }: any) => {
                   onClick={()=>removeFile(item.public_id)}
 
                 >
-                  <XMarkIcon className="w-6 h-6 fill-white hover:fill-secondary-400 hover:fill-red-500 transition-colors" />
+                  <XMarkIcon className="w-3 lg:w-6 h-3 lg:h-6 fill-white hover:fill-secondary-400 hover:fill-red-500 transition-colors" />
                 </IconButton>
               }
               actionPosition="left"
