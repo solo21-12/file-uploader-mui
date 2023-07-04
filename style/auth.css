@@ -20,7 +20,18 @@ body {
   border-radius: 8px !important;
 }
 
-.k{
+.auth-container-main2 {
+  width: 65% !important;
+  background-color: #fff !important;
+  height: 50vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  border: 4px dashed #f2f2f2 !important;
+  border-radius: 8px !important;
+}
+
+.k {
   height: 60vh !important;
 }
 
@@ -28,16 +39,23 @@ body {
   .auth-container-main {
     width: 55% !important;
   }
+  .auth-container-main2 {
+    width: 85% !important;
+  }
 }
 
 @media screen and (max-width: 772px) {
   .auth-container-main {
-    width: 75% !important; 
+    width: 75% !important;
+  }
+  .auth-container-main2 {
+    width: 90% !important;
   }
 }
 
 @media screen and (max-width: 576px) {
-  .auth-container-main {
+  .auth-container-main,
+  .auth-container-main2 {
     width: 95% !important;
   }
   p {

@@ -7,6 +7,7 @@ import { Fade } from "@mui/material";
 
 const Upload = () => {
   const [show, setShow] = useState<boolean>(false);
+  
   useEffect(() => {
     setShow(true);
   }, []);

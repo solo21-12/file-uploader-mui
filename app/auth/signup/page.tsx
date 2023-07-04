@@ -12,12 +12,11 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import GoogleIcon from "@mui/icons-material/Google";
-import GitHubIcon from "@mui/icons-material/GitHub";
 import LoginIcon from "@mui/icons-material/Login";
 import { Fade } from "@mui/material";
 import FormHelperText from "@mui/material/FormHelperText";
 import supabase from "@/config/supabse";
+import ConfirmEmailPage from "@/components/confirmEmail";
 
 const SignUp = () => {
   const [email, setEmail] = useState<string>("");
@@ -29,7 +28,7 @@ const SignUp = () => {
   const [emailV, setemailV] = useState<string>("");
   const [activeStep, setActiveStep] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
-
+  const [error, setError] = useState<string>("");
   const router = useRouter();
   const [show, setShow] = useState<boolean>(false);
   useEffect(() => {
@@ -39,13 +38,16 @@ const SignUp = () => {
   const steps = ["Step 1", "Step 2", "Step 3"]; // Add your desired step labels here
 
   const handleSubmit = async () => {
-    setLoading(true);
-
     try {
       let { data, error } = await supabase.auth.signUp({
         email: email,
         password: password,
       });
+      if (error) {
+        setError("Error occured try next time");
+      } else {
+        setLoading(true);
+      }
     } catch (error) {
       console.log("error occured");
       router.push("/");
@@ -132,6 +134,13 @@ const SignUp = () => {
             >
               {activeStep === 0 && (
                 <>
+                  <FormHelperText
+                    sx={{
+                      color: "red",
+                    }}
+                  >
+                    {error}
+                  </FormHelperText>
                   <TextField
                     label="Email Address"
                     sx={{
@@ -282,35 +291,7 @@ const SignUp = () => {
           </Box> */}
           </Container>
         ) : (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              alignContent: "center",
-              height: "80vh",
-            }}
-          >
-            <CircularProgress
-              sx={{
-                color: "#817245",
-                width: "80px !important",
-                height: "80px !important",
-              }}
-            />
-            <Typography
-              variant="h2"
-              sx={{
-                fontFamily: "Barlow",
-                color: "#817245",
-                fontSize: "60px",
-              }}
-              className="mt-5 text-lg"
-            >
-              Signing Up...
-            </Typography>
-          </Box>
+          <ConfirmEmailPage />
         )}
       </Fade>
     </Container>
