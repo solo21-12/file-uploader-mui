@@ -5,7 +5,7 @@ import "../style/appBar.css";
 import "../style/auth.css";
 import "../style/dashboard.css";
 import { Inter } from "next/font/google";
-import { AuthProvider, useAuthContext } from "./Context/store";
+import { AuthProvider } from "./Context/store";
 
 const inter = Inter({ subsets: ["latin"] });
 
