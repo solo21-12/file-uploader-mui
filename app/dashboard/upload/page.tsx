@@ -14,7 +14,7 @@ const Upload = () => {
     <Fade in={show} timeout={2000}>
       <Container>
         <Box>
-          <h1 className="title text-3xl mt-8 font-bold text-[#817245]">
+          <h1 className="title  text-[16px] mt-8 font-bold text-[#817245]">
             Upload Files
           </h1>
           <DropZone className="p-16 mt-10 border border-neutral-200" />

@@ -1,90 +1,90 @@
 @import url("https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,600;1,400;1,500;1,600&display=swap");
 
 *{
-  box-sizing: border-box;
+  box-sizing: border-box !important;
 }
 
 p {
-  color: #637381;
-  font-size: 1rem;
-  font-weight: 400;
+  color: #637381 !important;
+  /* font-size: 1rem !important; */
+  font-weight: 400 !important;
   line-height: 1.5;
-  max-width: 80%;
+  /* max-width: 80% !important; */
 }
 .barlow {
-  font-family: "Barlow", serif;
+  font-family: "Barlow", serif !important;
 }
 .container {
-  display: flex;
-  align-items: center;
-  height: calc(100vh - 150px);
+  display: flex !important;
+  align-items: center !important;
+  height: calc(110vh - 150px) !important;
   font-family: "Barlow", serif !important;
-  margin-top: 50px;
-  background: linear-gradient(to bottom rgba(255,255,255,0.9),rgba(255,255,255,0.9),url(/overlay_1.jpg));
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center center;
-  position: relative;
-  overflow: hidden;
+  margin-top: 50px !important;
+  background: linear-gradient(to bottom rgba(255,255,255,0.9),rgba(255,255,255,0.9),url(/overlay_1.jpg)) !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  position: relative !important;
+overflow: hidden !important;
 }
 .container-text-wrapper {
-  width: 50%;
-  display: flex;
-  flex-direction: column;
-  height: 60vh;
-  justify-content: space-between;
+  width: 50% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 60vh !important;
+  justify-content: space-between !important;
 }
 .container-text-wrapper h2 > span {
-  color: #fa541c;
+  color: #fa541c !important;
 }
 .container-img-wrapper {
-  width: 50%;
+  width: 50% !important;
 }
 
 .container-img-wrapper img {
-  width: 100%;
+  width: 100% !important;
 }
 .hero-text {
-  font-size: 4rem;
-  font-weight: 700;
+  font-size: 4rem !important;
+  font-weight: 700 !important;
 }
 
 @media screen and (min-width:892px) {
   .button{
-    width: 50%;
-    border-radius: 8px;
-    padding: 12px;
+    width: 70% !important;
+    border-radius: 8px !important;
+    padding: 12px !important;
   }
 }
 
 @media screen and (max-width: 1200px) {
   .hero-text {
-    font-size: 3.425rem;
+    font-size: 3.425rem !important;
   }
 }
 @media screen and (max-width: 892px) {
   .container {
-    display: block;
+    display: block !important;
   }
   .container-img-wrapper {
-    display: none;
+    display: none !important;
   }
   .container-text-wrapper {
-    width: 75%;
-    align-items: center;
-    text-align: center;
+    width: 100% !important;
+    align-items: center !important;
+    text-align: center !important;
     /* height: 45vh; */
   }
   .hero-text {
-    font-size: 3.25rem;
+    font-size: 3.25rem !important;
   }
 }
 
 @media screen and (max-width:576px) {
   .hero-text {
-    font-size: 2.5rem;
+    font-size: 2.5rem !important;
   }
   .container-text-wrapper{
-    width: 100%;
+    width: 100% !important;
   }
 }

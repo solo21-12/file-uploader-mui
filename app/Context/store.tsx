@@ -1,6 +1,7 @@
 "use client";
 
 import supabase from "@/config/supabse";
+import { CssBaseline } from "@mui/material";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 interface Props {
@@ -36,7 +37,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return { currentUser, signOut: () => supabase.auth.signOut(), setUser };
   }, [currentUser]);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      <CssBaseline />
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuthContext = () => useContext(AuthContext);

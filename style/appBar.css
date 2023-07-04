@@ -1,14 +1,14 @@
 
 .toolBar {
-  display: flex;
-  justify-content: space-between;
-  width: 70%;
-  margin: 10px auto;
-  border-bottom: 1px solid #f2f2f2;
+  display: flex !important;
+  justify-content: space-between !important;
+  width: 70% !important;
+  margin: 10px auto  !important;
+  border-bottom: 1px solid #f2f2f2 !important;
 }
 
 @media screen and (max-width: 892px) {
   .toolBar {
-    width: 100%;
+    width: 100% !important;
   }
 }

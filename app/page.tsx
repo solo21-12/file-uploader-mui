@@ -19,37 +19,12 @@ const Home = () => {
   useEffect(() => {
     setShow(true);
   }, []);
-  console.log("user", user);
+
 
   return (
     <Fade in={show} timeout={2000}>
-      <Container
-        maxWidth="lg"
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          height: "calc(100vh - 150px)",
-          fontFamily: '"Barlow", serif !important',
-          marginTop: "50px",
-          background:
-            "linear-gradient(to bottom rgba(255,255,255,0.9),rgba(255,255,255,0.9),url(/overlay_1.jpg))",
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center center",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <Container
-          sx={{
-            width: "50%",
-            display: "flex",
-            flexDirection: "column",
-            height: "60vh",
-            justifyContent: "space-between",
-          }}
-          maxWidth="md"
-        >
+      <Container className="container" maxWidth="lg">
+        <Container className="container-text-wrapper" maxWidth="xl">
           <Typography variant="h2" className="barlow hero-text">
             Upload Your File Today With <span>Solo Upload</span>
           </Typography>
@@ -57,7 +32,7 @@ const Home = () => {
             className="barlow"
             style={{
               color: "#817245",
-              marginBottom: "15px",
+              marginBottom:"15px"
             }}
           >
             Welcome to our cutting-edge website built with React at the frontend
@@ -65,7 +40,7 @@ const Home = () => {
             effortlessly upload and manage your images on the cloud using
             Cloudinary. With seamless integration with Supabase as our robust
             database, we offer a powerful solution for storing and retrieving
-            your data securely.
+            your data securely. 
           </p>
           <Button
             sx={{
