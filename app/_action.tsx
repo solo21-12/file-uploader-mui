@@ -2,12 +2,12 @@
 
 import supabase from "@/config/supabse";
 import { v2 as cloudinary } from "cloudinary";
-import PocketBase from "pocketbase";
+
 const adminUsername = process.env
   .NEXT_PUBLIC_ADMIN_USERNAME_POCKETBASE as string;
 const adminPassword = process.env
   .NEXT_PUBLIC_ADMIN_PASSWORD_POCKETBASE as string;
-const pb = new PocketBase(process.env.NEXT_PUBLIC_ADMIN_URL_POCKETBASE);
+
 
 const cloudinaryConfig = cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDNARY_NAME,
