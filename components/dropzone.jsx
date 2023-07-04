@@ -131,6 +131,7 @@ const Dropzone = ({ className }) => {
                 sx={{
                   fontFamily: "Barlow",
                   color: "#817245",
+                  fontSize:"10px"
                 }}
               >
                 Drag & drop images here, or click to select files
