@@ -45,7 +45,7 @@ const DataComponent: React.FC = () => {
       }
     };
 
-    if (currentUser) {
+    if (currentUser.id) {
       fetchDataAsync();
     }
   }, [currentUser.id]);
@@ -58,7 +58,7 @@ const DataComponent: React.FC = () => {
   return (
     <Fade in={show} timeout={2000}>
       <div>
-        {currentUser && datas && datas.length > 0 ? (
+        {currentUser.id && datas && datas.length > 0 ? (
           <Images files={datas} removeFile={deletFiles} />
         ) : (
           <Variants />
