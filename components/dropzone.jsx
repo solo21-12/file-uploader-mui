@@ -1,14 +1,16 @@
-import Image from "next/image";
+"use client";
+
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { ArrowUpTrayIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import { Container } from "@mui/material";
 import { getSignature, saveToDataBase } from "@/app/_action";
-import { Button, CircularProgress, Typography, Box } from "@mui/material";
-import CheckIcon from "@mui/icons-material/Check";
+import { Typography } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useAuthContext } from "@/app/Context/store";
 import { useRouter } from "next/navigation";
+import Uploading from "./uploading";
+import Success from "./succes";
+import Rejected from "./rejected";
 const Dropzone = ({ className }) => {
   const [files, setFiles] = useState([]);
   const [rejected, setRejected] = useState([]);
@@ -69,22 +71,27 @@ const Dropzone = ({ className }) => {
       setIsUploading(true);
       const { signature, timestamp } = await getSignature();
 
-      const formData = new FormData();
-      files.forEach((file) => formData.append("file", file));
-      formData.append("api_key", process.env.NEXT_PUBLIC_CLOUDNARY_API_KEY);
-      formData.append("signature", signature);
-      formData.append("timestamp", timestamp);
-      formData.append("folder", "next");
-
       const URL = process.env.NEXT_PUBLIC_CLOUDINARY_URL;
-      const dataPromises = files.map((file) =>
-        fetch(URL, {
+      const uploadPromises = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("api_key", process.env.NEXT_PUBLIC_CLOUDNARY_API_KEY);
+        formData.append("signature", signature);
+        formData.append("timestamp", timestamp);
+        formData.append("folder", "next");
+
+        const uploadPromise = fetch(URL, {
           method: "POST",
           body: formData,
-        }).then((res) => res.json())
-      );
+        }).then((res) => res.json());
 
-      const uploadResponses = await Promise.all(dataPromises);
+        uploadPromises.push(uploadPromise);
+      }
+
+      const uploadResponses = await Promise.all(uploadPromises);
 
       if (uploadResponses.length === files.length) {
         setIsUploading(false);
@@ -115,7 +122,7 @@ const Dropzone = ({ className }) => {
           })}
         >
           <input {...getInputProps()} />
-          <div className="flex flex-col items-center justify-center gap-4 text-[#817245]  cursor-pointer">
+          <div className="flex flex-col items-center justify-center gap-4 text-[#817245]  cursor-pointer p-10">
             <CloudUploadIcon className="w-14 h-14 fill-current" sx={{}} />
             {isDragActive ? (
               <Typography
@@ -131,7 +138,7 @@ const Dropzone = ({ className }) => {
                 sx={{
                   fontFamily: "Barlow",
                   color: "#817245",
-                  fontSize:"10px"
+                  fontSize: "10px",
                 }}
               >
                 Drag & drop images here, or click to select files
@@ -140,59 +147,47 @@ const Dropzone = ({ className }) => {
           </div>
         </div>
       )}
-      <Container className="mt-10">
-        {/* Accepted files */}
-        <Container>
+      <Container
+        className="mt-10"
+        sx={{
+          padding: 0,
+        }}
+      >
+        <Container
+          sx={{
+            padding: 0,
+          }}
+        >
           {!isUploading && files.length > 0 && (
             <Container>
-              <Container className="flex gap-4">
-                <h2 className="title text-3xl font-semibold font-Barlow text-[#817245]">
-                  Preview
-                </h2>
+              <h2 className="title text-3xl font-semibold font-Barlow text-[#817245]">
+                Preview
+              </h2>
+              <Container className="flex gap-4 mt-4">
                 <button
                   type="button"
                   onClick={removeAll}
                   className="mt-1 text-[12px] uppercase tracking-wider font-bold text-neutral-500 border border-secondary-400 rounded-md px-3 hover:bg-secondary-400 hover:text-[#817245] transition-colors"
                 >
-                  Remove all files
+                  Remove all
                 </button>
                 <button
                   type="submit"
                   className="ml-auto mt-1 text-[12px] uppercase tracking-wider font-bold text-neutral-500 border border-[#817245]  rounded-md px-3 hover:text-[#817245] hover:scale-105 transition-colors"
                 >
-                  Upload to Solo Upload
+                  Upload
                 </button>
               </Container>
               <h3 className="title text-lg font-semibold text-neutral-600 mt-10 border-b pb-3">
                 Accepted Files
               </h3>
-              <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-10">
-                {files.map((file) => (
-                  <li
-                    key={file.name}
-                    className="relative h-32 rounded-md shadow-lg"
-                  >
-                    <Image
-                      src={file.preview}
-                      alt={file.name}
-                      width={100}
-                      height={100}
-                      onLoad={() => {
-                        URL.revokeObjectURL(file.preview);
-                      }}
-                      className="h-full w-full object-contain rounded-md"
-                    />
-                    <button
-                      type="button"
-                      className="w-7 h-7 border border-secondary-400 bg-red-600 rounded-full flex justify-center items-center absolute -top-3 -right-3 hover:bg-white transition-colors"
-                      onClick={() => removeFile(file.name)}
-                    >
-                      <XMarkIcon className="w-5 h-5 fill-white hover:fill-secondary-400 hover:fill-red-500 transition-colors" />
-                    </button>
-                    <p className="mt-2 text-neutral-500 text-[12px] font-medium">
-                      {file.name}
-                    </p>
-                  </li>
+              <ul className="mt-6 flex flex-col">
+                {files.map((file, errors) => (
+                  <Rejected
+                    file={file}
+                    errors={errors}
+                    removeRejected={removeFile}
+                  />
                 ))}
               </ul>
             </Container>
@@ -206,28 +201,11 @@ const Dropzone = ({ className }) => {
               </h3>
               <ul className="mt-6 flex flex-col">
                 {rejected.map(({ file, errors }) => (
-                  <li
-                    key={file.name}
-                    className="flex items-start justify-between"
-                  >
-                    <div>
-                      <p className="mt-2 text-neutral-500 text-sm font-medium">
-                        {file.name}
-                      </p>
-                      <ul className="text-[12px] text-red-400">
-                        {errors.map((error) => (
-                          <li key={error.code}>{error.message}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <button
-                      type="button"
-                      className="mt-1 py-1 text-[12px] uppercase tracking-wider font-bold text-neutral-500 border border-secondary-400 rounded-md px-3 hover:bg-secondary-400 hover:text-[#817245] transition-colors"
-                      onClick={() => removeRejected(file.name)}
-                    >
-                      remove
-                    </button>
-                  </li>
+                  <Rejected
+                    file={file}
+                    errors={errors}
+                    removeRejected={removeRejected}
+                  />
                 ))}
               </ul>
             </Container>
@@ -235,85 +213,10 @@ const Dropzone = ({ className }) => {
         </Container>
       </Container>
       <Container>
-        {isUploading && (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              alignContent: "center",
-              height: "80vh",
-            }}
-          >
-            <CircularProgress
-              sx={{
-                color: "#817245",
-                width: "80px !important",
-                height: "80px !important",
-              }}
-            />
-            <Typography
-              variant="h2"
-              sx={{
-                fontFamily: "Barlow",
-                color: "#817245",
-                fontSize: "60px",
-              }}
-              className="mt-5 text-lg"
-            >
-              Uploading...
-            </Typography>
-          </Box>
-        )}
+        {isUploading && <Uploading text="Uploading..." />}
 
         {isUploaded && (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              alignContent: "center",
-              height: "80vh",
-            }}
-          >
-            <div className="">
-              <div className="message-container-child-cirlce">
-                <CheckIcon
-                  sx={{
-                    color: "white",
-                    fontSize: "45px",
-                  }}
-                />
-              </div>
-              <Typography
-                variant="h2"
-                sx={{
-                  fontFamily: "Barlow",
-                  color: "#817245",
-                  fontSize: "60px",
-                }}
-                className="mt-5 text-lg"
-              >
-                Succesfully Uploaded
-              </Typography>
-              <Button
-                sx={{
-                  color: "#817245",
-                  ":hover": {
-                    backgroundColor: "white !important",
-                    scale: "1.05",
-                  },
-                  marginTop: "25px",
-                }}
-                variant="contained"
-                onClick={() => setIsUploaded(!isUploaded)}
-              >
-                Continue Uploading
-              </Button>
-            </div>
-          </Box>
+          <Success setIsUploaded={setIsUploaded} isUploaded={isUploaded} />
         )}
       </Container>
     </form>
