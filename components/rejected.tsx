@@ -39,7 +39,7 @@ export default function Rejected({
           <Avatar 
           src={file.preview && file.preview}
           sx={{
-            bgcolor:!file.preview && 'teal'
+            bgcolor:'teal'
           }}>
             {!file.preview && <ImageIcon />}
           </Avatar>
